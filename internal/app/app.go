@@ -1,6 +1,7 @@
 package app
 
 import (
+	"TGNotification/internal/clients"
 	"TGNotification/internal/repository"
 	"TGNotification/internal/service"
 	"TGNotification/internal/transport/telegram"
@@ -28,13 +29,20 @@ func NewApp() *App {
 	logComponent := logger.FromContext(ctx).With("component", "app")
 	ctx = logger.IntoContext(ctx, logComponent)
 
+	djangoClient, err := clients.NewDjangoClient(cfg.DjangoGRPCAddr)
+	if err != nil {
+		logger.FromContext(ctx).Error("app.NewApp, failed to connect to django grpc",
+			slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+
 	repo, err := repository.NewRedisRepository(ctx, cfg.RedisAddr)
 	if err != nil {
 		logger.FromContext(ctx).Error("Failed to connect to Redis", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
-	tgBot, err := telegram.NewBot(cfg.TGToken)
+	tgBot, err := telegram.NewBot(cfg.TGToken, djangoClient)
 	if err != nil {
 		logger.FromContext(ctx).Error("Failed to create telegram bot", "error", err.Error())
 		os.Exit(1)

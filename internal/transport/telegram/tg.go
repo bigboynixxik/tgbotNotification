@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"TGNotification/internal/clients"
 	"TGNotification/pkg/logger"
 	"context"
 	"fmt"
@@ -10,16 +11,20 @@ import (
 )
 
 type Bot struct {
-	botAPI *tgbotapi.BotAPI
+	botAPI       *tgbotapi.BotAPI
+	DjangoClient *clients.DjangoClient
 }
 
-func NewBot(token string) (*Bot, error) {
+func NewBot(token string, djangoClient *clients.DjangoClient) (*Bot, error) {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		return nil, fmt.Errorf("tg.NewBot,error creating bot api: %w", err)
 	}
 	slog.Info("Created telegram BotAPI")
-	return &Bot{botAPI: bot}, nil
+	return &Bot{
+		botAPI:       bot,
+		DjangoClient: djangoClient,
+	}, nil
 }
 
 // Start - запускает бесконечный цикл прослушивания обновлений от Telegram
@@ -73,8 +78,19 @@ func (b *Bot) handleCommand(ctx context.Context, message *tgbotapi.Message) {
 	switch message.Command() {
 	case "start":
 		log.Info("User started bot")
-		responseText = "🐾 Привет! Я бот зоомагазина.\nВаш Chat ID: " + fmt.Sprint(message.Chat.ID) + "\nСообщите этот ID администратору для привязки уведомлений."
-
+		args := message.CommandArguments()
+		if len(args) == 0 {
+			responseText = "🐾 Привет! Я бот зоомагазина.\nВаш Chat ID: " + fmt.Sprint(message.Chat.ID) + "\nСообщите этот ID администратору для привязки уведомлений."
+		} else {
+			resp, msg, err := b.DjangoClient.LinkUser(ctx, args, message.From.ID, message.From.UserName)
+			if err != nil || !resp {
+				log.Error("telegram.handleCommand, Failed to link user", slog.String("error", fmt.Sprint(err)))
+				responseText = "Не получилось привязать ваш токен. Попробуйте ещё раз."
+			} else {
+				// Если всё ок, выводим сообщение, которое нам прислал Django
+				responseText = msg
+			}
+		}
 	case "help":
 		responseText = "Я могу отправлять вам уведомления о статусе заказов. Ожидайте новых сообщений!"
 

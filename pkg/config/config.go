@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	TGToken   string `mapstructure:"TG_TOKEN"`
-	AppEnv    string `mapstructure:"APP_ENV"`
-	RedisAddr string `mapstructure:"REDIS_ADDR"`
+	TGToken        string `mapstructure:"TG_TOKEN"`
+	AppEnv         string `mapstructure:"APP_ENV"`
+	RedisAddr      string `mapstructure:"REDIS_ADDR"`
+	DjangoGRPCAddr string `mapstructure:"DJANGO_GRPC_ADDR"`
 }
 
 func LoadConfig(path string) (*Config, error) {
