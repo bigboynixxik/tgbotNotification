@@ -62,7 +62,7 @@ func (ns *NotifierService) StartWorker(ctx context.Context) error {
 					slog.String("error", pushErr.Error()))
 				time.Sleep(2 * time.Second)
 			} else {
-				log.Info("service.StartWorker Successfully processed and sent notification",
+				log.Info("service.StartWorker Successfully processed and retry ",
 					slog.Int64("notification", notification.ChatID))
 			}
 
