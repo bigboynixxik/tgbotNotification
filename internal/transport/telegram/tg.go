@@ -88,3 +88,17 @@ func (b *Bot) handleCommand(ctx context.Context, message *tgbotapi.Message) {
 		log.Error("tg.handleCommand, Failed to send command response", slog.String("error", err.Error()))
 	}
 }
+
+func (b *Bot) SendMessage(ctx context.Context, chatID int64, message string) error {
+	log := logger.FromContext(ctx)
+	msg := tgbotapi.NewMessage(chatID, message)
+	msg.ParseMode = tgbotapi.ModeHTML
+
+	_, err := b.botAPI.Send(msg)
+	if err != nil {
+		log.Error("tg.sendMessage, Failed to send message", slog.String("error", err.Error()))
+		return fmt.Errorf("tg.sendMessage, Failed to send message: %w", err)
+	}
+	log.Info("Successfully sent message", slog.Int64("chat_id", chatID))
+	return nil
+}

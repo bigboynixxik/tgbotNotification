@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package grpcapi;
+
+option go_package = "TGNotification/pkg/api";
+
+service NotificationSystem {
+  rpc LinkUserTelegram (LinkRequest) returns (LinkResponse);
+}
+
+message LinkRequest {
+  string token = 1;
+  int64  chat_id = 2;
+  string username = 3;
+}
+
+message LinkResponse {
+  bool   success = 1;
+  string message = 2;
+}
