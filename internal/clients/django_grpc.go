@@ -38,7 +38,7 @@ func (c *DjangoClient) LinkUser(ctx context.Context, token string, chatId int64,
 		Username: uname,
 	}
 
-	ctxTimeout, cancel := context.WithTimeout(ctx, 3*time.Second)
+	ctxTimeout, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	resp, err := c.client.LinkUserTelegram(ctxTimeout, req)
 	if err != nil {
