@@ -80,7 +80,7 @@ func (b *Bot) handleCommand(ctx context.Context, message *tgbotapi.Message) {
 		log.Info("User started bot")
 		args := message.CommandArguments()
 		if len(args) == 0 {
-			responseText = "🐾 Привет! Я бот зоомагазина.\nВаш Chat ID: " + fmt.Sprint(message.Chat.ID) + "\nСообщите этот ID администратору для привязки уведомлений."
+			responseText = "🐾 Привет! Я бот зоомагазина.\nВаш Chat ID: " + fmt.Sprint(message.Chat.ID) + "\nНачинаю привязку токена"
 		} else {
 			resp, msg, err := b.DjangoClient.LinkUser(ctx, args, message.From.ID, message.From.UserName)
 			if err != nil || !resp {

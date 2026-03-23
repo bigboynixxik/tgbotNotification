@@ -27,6 +27,7 @@ func NewApp() *App {
 	}
 	ctx := context.Background()
 	logComponent := logger.FromContext(ctx).With("component", "app")
+	logger.Setup(cfg.AppEnv)
 	ctx = logger.IntoContext(ctx, logComponent)
 
 	djangoClient, err := clients.NewDjangoClient(cfg.DjangoGRPCAddr)
