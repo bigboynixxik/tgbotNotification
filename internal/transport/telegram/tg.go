@@ -82,7 +82,7 @@ func (b *Bot) handleCommand(ctx context.Context, message *tgbotapi.Message) {
 		if len(args) == 0 {
 			responseText = "🐾 Привет! Я бот зоомагазина.\nВаш Chat ID: " + fmt.Sprint(message.Chat.ID) + "\nНачинаю привязку токена"
 		} else {
-			resp, msg, err := b.DjangoClient.LinkUser(ctx, args, message.From.ID, message.From.UserName)
+			resp, msg, err := b.DjangoClient.LinkUser(ctx, args, message.Chat.ID, message.From.UserName)
 			if err != nil || !resp {
 				log.Error("telegram.handleCommand, Failed to link user", slog.String("error", fmt.Sprint(err)))
 				responseText = "Не получилось привязать ваш токен. Попробуйте ещё раз."
